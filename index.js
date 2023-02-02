@@ -11,6 +11,7 @@ module.exports = function (homebridge) {
 
 function HttpAdvancedAccessory(log, config) {
 	this.log = log;
+	this.config = config;
 	this.name = config.name;
 	this.service = config.service;
 	this.optionCharacteristic = config.optionCharacteristic || [];
@@ -138,7 +139,8 @@ HttpAdvancedAccessory.prototype = {
 					sendImmediately: this.auth.immediately
 				},
 				headers: {
-					Authorization: "Basic " + new Buffer(this.auth.username + ":" + this.auth.password).toString("base64")
+					Authorization: "Basic " + new Buffer(this.auth.username + ":" + this.auth.password).toString("base64"),
+					...this.config.headers
 				}
 			},
 			function(error, response, body) {
@@ -283,9 +285,9 @@ HttpAdvancedAccessory.prototype = {
 		var informationService = new Service.AccessoryInformation();
 
 		informationService
-			.setCharacteristic(Characteristic.Manufacturer, "Custom Manufacturer")
-			.setCharacteristic(Characteristic.Model, "HTTP Accessory Model")
-			.setCharacteristic(Characteristic.SerialNumber, "HTTP Accessory Serial Number");
+			.setCharacteristic(Characteristic.Manufacturer, this.config?.manufacturer || "Custom Manufacturer")
+			.setCharacteristic(Characteristic.Model, this.config?.model || "HTTP Accessory Model")
+			.setCharacteristic(Characteristic.SerialNumber, this.config?.serialNumber || "HTTP Accessory Serial Number");
 
 		
 		var newService = new Service[this.service](this.name);
