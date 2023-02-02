@@ -1,22 +1,23 @@
-# homebridge http advanced accessory
+# homebridge rest accessory
 
 Homebridge plugin that can turn virtually any device which exposes HTTP APIs into an HomeKit-compatible Service.
 Its purpose is to connect any device that can be controlled via HTTP command to Homekit. It creates a Homebridge accessory which uses HTTP calls to *change* and *check* its state via [Actions](#actions).
 
-This plugin is a fork of HttpAccessory and has merged many features (mainly mappers) from the [homebridge-http-securitysystem](<https://www.npmjs.com/package/homebridge-http-securitysystem>).
+This plugin is a fork of [homebridge-http-advanced-accessory](<https://github.com/staromeste/homebridge-http-advanced-accessory>).  This fork adds support for setting custom HTTP headers (for non-basic authentication), and defining manufacturer, model, and serial numbers to display in HomeKit.
 
 ## Installation
 
-1. Install homebridge using: npm install -g homebridge
-2. Install this plugin using: npm install -g homebridge-http-advanced-accessory
+1. Install homebridge using: npm install -g homebridge, or use Docker
+2. Go to your installation's node_modules directory
+2. Clone the repository using git: git clone https://github.com/Extremeswank/homebridge-rest-accessory
 3. Update your configuration file. See sample-config.json in this repository for a sample. 
 
 ## Features
 
 The main function of the module is to proxy HomeKit queries to an arbitrary web API to retrieve and set the status of the accessory. Main features include:
 
-- Configurable HTTP endpoints to use for getting/setting the state, including passing parameters in for of GET or in POST body
-- Support for basic HTTP authentication
+- Configurable HTTP endpoints to use for getting/setting the state, including passing parameters in the GET, POST, or PUT body
+- Support for basic HTTP authentication directly, and custom HTTP headers to enable other authentication types
 - Configurable mapping of API response data to HomeKit Accessory status to allow custom responses
 - Configurable mapping of url and body request data to HomeKit Accessory status to allow custom requests
 - Interval polling of the current state to enable real-time notifications even if the Accessory has been enabled without the use of HomeKit
@@ -42,7 +43,13 @@ Configuration sample:
             "forceRefreshDelay": 5,
             "username": "admin",
             "password": "admin",
-            "debug" : false,
+            "debug": false,
+			"headers": {
+			   "Content-Type": "application/xml"
+			},
+			"manufacturer": "Acme, Inc.",
+			"model": "Turbo Sensor XL v5",
+			"serialNumber": "ABC12345",
             "optionCharacteristic" :[],
             "urls":{
                "getContactSensorState": {
