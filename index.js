@@ -128,26 +128,27 @@ HttpAdvancedAccessory.prototype = {
  * @param callback Callback method to call with the result or error (error, response, body)
  */
 	httpRequest : function(url, body, httpMethod, callback) {
-		setTimeout(
-			function(){request({
+		setTimeout(function() {
+			var options = {
 				url: url,
 				body: body,
 				method: httpMethod,
 				auth: {
-					user: this.auth.username,
-					pass: this.auth.password,
-					sendImmediately: this.auth.immediately
+					...this.auth
 				},
 				headers: {
-					Authorization: "Basic " + new Buffer(this.auth.username + ":" + this.auth.password).toString("base64"),
 					...this.config.headers
 				}
-			},
-			function(error, response, body) {
+			};
+			if (this.auth.username && this.auth.password && this.auth.immediately) {
+				options.headers.Authorization = "Basic " + Buffer.from(this.auth.username + ":" + this.auth.password).toString("base64");
+			}
+			request(options, function(error, response, body) {
 				this.uriCalls--;
 				this.debugLog("httpRequest ended, current uriCalls is " + this.uriCalls);
-				callback(error, response, body)
-			}.bind(this))}.bind(this), this.uriCalls * this.uriCallsDelay);
+				callback(error, response, body);
+			}.bind(this));
+		}.bind(this), this.uriCalls * this.uriCallsDelay);
 		
 		this.uriCalls++;
 		this.debugLog("httpRequest called, current uriCalls is " + this.uriCalls); 
